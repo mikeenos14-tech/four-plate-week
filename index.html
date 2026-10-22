@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Four-Plate Week</title>
+<meta name="description" content="A 4-day, under-60-minute strength, cardio and mobility program.">
+<meta name="theme-color" content="#EDF0EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1513" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Four-Plate">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,-apple-system,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one-column phone app, sticky header, bottom tab bar; each training day is coded by a bumper-plate color */
+:root{
+  --bg:#EDF0EE; --surface:#FFFFFF; --sunk:#E3E8E5; --ink:#16201C; --muted:#5A6762; --line:#D3DBD7;
+  --blue:#1F5FA8; --green:#2C7A4E; --yellow:#B88A00; --red:#BF3A2C;
+  --blue-t:#E2ECF7; --green-t:#E1F0E7; --yellow-t:#F7EFD3; --red-t:#F8E3E0;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --tabh:64px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1513; --surface:#18201D; --sunk:#202A26; --ink:#E5ECE8; --muted:#94A39C; --line:#2B3632;
+  --blue:#6EA6E6; --green:#5DBB86; --yellow:#E6BC35; --red:#EC6F5F;
+  --blue-t:#17263A; --green-t:#16291F; --yellow-t:#2B2510; --red-t:#311A17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1513; --surface:#18201D; --sunk:#202A26; --ink:#E5ECE8; --muted:#94A39C; --line:#2B3632;
+  --blue:#6EA6E6; --green:#5DBB86; --yellow:#E6BC35; --red:#EC6F5F;
+  --blue-t:#17263A; --green-t:#16291F; --yellow-t:#2B2510; --red-t:#311A17; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
+
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-block:12px 10px}
+.brand{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.01em;line-height:1;text-transform:uppercase}
+.brand .plates{display:inline-flex;gap:3px;margin-right:8px;vertical-align:2px}
+.brand .plates i{width:7px;height:20px;border-radius:2px;display:block}
+.sub{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;text-align:right}
+
+main{padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px) + 32px)}
+main .wrap{display:flex;flex-direction:column;gap:22px;padding-block:18px}
+h1,h2,h3{font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:40px}
+h2{font-size:26px;letter-spacing:.01em}
+h3{font-size:19px;letter-spacing:.02em}
+p{margin:0}
+.lede{font-size:16px;color:var(--muted);max-width:60ch}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+section{display:flex;flex-direction:column;gap:12px}
+
+/* tab bar */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .row{max-width:680px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--tabh)}
+nav.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted);cursor:pointer}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs button[aria-selected="true"]{color:var(--ink)}
+nav.tabs button[aria-selected="true"] svg{stroke-width:2.4}
+
+/* week strip */
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dayc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0;cursor:default}
+.dayc .d{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.dayc .disc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;color:#fff}
+.dayc .disc.off{background:var(--sunk);color:var(--muted)}
+.dayc .l{font-size:10.5px;line-height:1.2;color:var(--muted)}
+.dayc.gym{cursor:pointer}
+.dayc.today{border-color:var(--ink);border-width:2px}
+
+.bg-blue{background:var(--blue)} .bg-green{background:var(--green)} .bg-yellow{background:var(--yellow)} .bg-red{background:var(--red)}
+.c-blue{color:var(--blue)} .c-green{color:var(--green)} .c-yellow{color:var(--yellow)} .c-red{color:var(--red)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:baseline}
+.kv .k{font-family:var(--display);font-weight:800;font-size:22px;white-space:nowrap}
+.kv .v{color:var(--muted);font-size:14px;min-width:0}
+ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+ul.plain li::marker{color:var(--muted)}
+
+/* train */
+.plates-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pp{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-width:0}
+.pp .disc{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;position:relative}
+.pp .disc::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--surface)}
+.pp .n{font-size:11px;font-weight:700;letter-spacing:.08em}
+.pp .t{font-size:11px;color:var(--muted);text-align:center;line-height:1.2}
+.pp[aria-pressed="true"]{border-color:var(--ink);border-width:2px;padding:9px 5px}
+
+.sess-head{display:flex;flex-direction:column;gap:8px}
+.timebar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;background:var(--line)}
+.timebar span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+
+.block{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.block-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+.block-h .note{font-size:12.5px;color:var(--muted);margin-top:2px}
+.ex{border-top:1px solid var(--line)}
+.ex:first-of-type{border-top:0}
+.ex-row{display:grid;grid-template-columns:44px 1fr auto;gap:6px;align-items:center;padding:6px 14px 6px 6px}
+.chk{width:44px;height:44px;border:0;background:none;cursor:pointer;display:grid;place-items:center;padding:0;-webkit-tap-highlight-color:transparent}
+.chk i{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.chk svg{width:16px;height:16px;stroke:#fff;stroke-width:3;fill:none;opacity:0}
+.chk[aria-pressed="true"] i{border-color:transparent;background:var(--done)}
+.chk[aria-pressed="true"] svg{opacity:1}
+.ex-name{min-height:44px;justify-content:center}
+.ex-name{background:none;border:0;text-align:left;padding:0;cursor:pointer;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ex-name b{font-weight:600;font-size:15px}
+.ex-name .rx{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.ex-tag{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.ex.done .ex-name b{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
+.howto{padding:0 14px 14px 56px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.howto .lab{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.howto .watch{font-size:13px;font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;align-self:flex-start}
+.chev{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .15s}
+.ex.open .chev{transform:rotate(90deg)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer}
+
+/* library */
+.search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lib{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+.card .lab{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* review */
+.verdicts{display:flex;flex-direction:column;gap:10px}
+.vrow{display:grid;grid-template-columns:1fr;gap:2px;padding:10px 0;border-top:1px solid var(--line)}
+.vrow:first-child{border-top:0;padding-top:0}
+.vrow b{font-weight:600}
+.vrow span{color:var(--muted);font-size:14px}
+.stamp{display:inline-block;font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.06em;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-right:6px;vertical-align:1px}
+.st-keep{background:var(--green-t);color:var(--green)}
+.st-change{background:var(--blue-t);color:var(--blue)}
+.st-cut{background:var(--red-t);color:var(--red)}
+.st-add{background:var(--yellow-t);color:var(--yellow)}
+.change-list{counter-reset:c;display:flex;flex-direction:column;gap:14px;margin:0;padding:0;list-style:none}
+.change-list li{display:grid;grid-template-columns:28px 1fr;gap:10px}
+.change-list li::before{counter-increment:c;content:counter(c);font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:var(--muted)}
+.change-list b{display:block}
+.change-list span{color:var(--muted);font-size:14px}
+.src{display:flex;flex-direction:column;gap:8px;font-size:14px}
+.src a{text-decoration:none;border-bottom:1px solid var(--line)}
+.src .who{color:var(--muted);font-size:13px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.callout{border-left:4px solid var(--red);background:var(--red-t);padding:12px 14px;border-radius:0 10px 10px 0;font-size:14px}
+.tests{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:14px}
+.tests .t{min-width:0}
+.tests .t span{display:block;color:var(--muted);font-size:12.5px}
+.tests .g{font-family:var(--mono);font-size:13px;text-align:right;white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:400px){h1{font-size:34px}.dayc .l{display:none}.brand{font-size:22px}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="brand"><span class="plates" aria-hidden="true"><i class="bg-blue"></i><i class="bg-green"></i><i class="bg-yellow"></i><i class="bg-red"></i></span>Four-Plate Week</div>
+  <div class="sub">4 days · ≤60 min</div>
+</div></header>
+
+<main>
+  <div class="wrap" id="view"></div>
+</main>
+
+<nav class="tabs" aria-label="Sections"><div class="row" role="tablist">
+  <button role="tab" data-tab="week" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Week</button>
+  <button role="tab" data-tab="train" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M2 12h20M5 8v8M8 6v12M16 6v12M19 8v8"/></svg>Train</button>
+  <button role="tab" data-tab="home" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button role="tab" data-tab="moves" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v6l-4 8M12 13l4 8M6 10l6-2 6 2"/></svg>Moves</button>
+  <button role="tab" data-tab="why" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg>Why</button>
+</div></nav>
+
+<script>
+/* ---------- Exercise library ---------- */
+const E = {
+  backwalk:{n:"Backward Walk / Sled Drag",tags:["Knee","Warm-up"],cue:"Short steps on the balls of your feet. With a sled, lean back, arms straight, and drag.",why:"Loads the quads hard with almost no knee stress. Ben Patrick's go-to knee warm-up, kept from Program 1 and upgraded to a sled when available.",swap:"Backward treadmill walk, 1.5–2 mph, no incline.",q:"backward sled drag knee"},
+  wgs:{n:"World's Greatest Stretch",tags:["Mobility","Warm-up"],cue:"Long lunge, same-side elbow to instep, then rotate and reach that arm to the ceiling. Move, don't hold.",why:"Hip flexors, hamstrings and thoracic spine in one move. Kept from both programs.",swap:"Spiderman lunge with reach.",q:"world's greatest stretch"},
+  hip9090:{n:"90/90 Hip Switches",tags:["Mobility","Warm-up"],cue:"Both knees bent 90°. Rotate the knees side to side without hands. Progress to lifting the back knee off the floor.",why:"Active hip rotation instead of a long passive hold, so it warms you up without sapping strength.",swap:"Seated windshield wipers.",q:"90 90 hip switch lift off"},
+  gobletpry:{n:"Goblet Squat Pry",tags:["Mobility","Warm-up"],cue:"Light bell at your chest, sit to the bottom, push knees out with elbows, shift side to side.",why:"Grooves squat depth right before squatting.",swap:"Bodyweight deep squat holding a post.",q:"goblet squat pry"},
+  pullapart:{n:"Band Pull-Apart",tags:["Warm-up","Shoulder"],cue:"Arms straight, pull the band to your chest by squeezing the shoulder blades.",why:"Wakes up the upper back before pressing.",swap:"Light cable reverse fly.",q:"band pull apart"},
+  pogo:{n:"Pogo Hops",tags:["Power","Warm-up","Knee"],cue:"Small, quick bounces on the balls of your feet. Stiff ankles, soft knees. Skip if the knee is flaring.",why:"Primes tendons and ankles before jumps. A low-dose stand-in for the jump rope and bounding from Program 1.",swap:"1–2 min easy jump rope, or fast calf raises.",q:"pogo hops"},
+  squat:{n:"Back Squat",tags:["Strength"],cue:"Brace before you descend. Knees track over toes, hit at least parallel, drive chest and hips up together.",why:"Biggest return for leg strength and bone loading. Kept from both programs.",swap:"Block 2: front squat or safety-bar squat. Knee flare: box squat to parallel.",q:"back squat technique"},
+  deadhang:{n:"Dead Hang",tags:["Grip","Shoulder","Mobility"],cue:"Straight arms, shoulders active (not shrugged into the ears), slow breathing.",why:"Grip strength tracks closely with long-term health, and hanging opens the shoulders and unloads the spine. Fits in your squat rest periods at no time cost.",swap:"Heavy DB holds for time.",q:"dead hang shoulders"},
+  bench:{n:"Bench Press",tags:["Strength"],cue:"Shoulder blades pinned, feet driving into the floor, bar to lower chest, 2 s down.",why:"Main horizontal push. Kept from both programs.",swap:"Block 2: incline DB press. Cranky shoulder: neutral-grip DB press.",q:"bench press technique"},
+  csrow:{n:"Chest-Supported DB Row",tags:["Strength"],cue:"Chest on a 30–45° bench, pull elbows toward your hips, pause 1 s at the top.",why:"Horizontal pull with no low-back cost, which saves your back for Sunday deadlifts. Replaces the barbell row.",swap:"Seal row or seated cable row.",q:"chest supported dumbbell row"},
+  cossack:{n:"Cossack Squat",tags:["Strength","Mobility"],cue:"Wide stance. Sit into one hip with the other leg straight, toes up. Heel stays down. Add a goblet weight once 8 per side is easy.",why:"Side-to-side strength and adductor range. Both old programs trained almost only forward-and-back. Chasing kids and catching a fall happen sideways.",swap:"Lateral lunge to a box (shorter range).",q:"cossack squat"},
+  facepull:{n:"Face Pull",tags:["Shoulder"],cue:"Rope to forehead, elbows high, finish with hands beside your ears, thumbs pointing back.",why:"Rear delts and rotator cuff for long-term shoulder health. Kept from both.",swap:"Band pull-apart, band external rotation.",q:"face pull technique"},
+  tibraise:{n:"Tibialis Raise",tags:["Knee"],cue:"Back against a wall, heels a foot out, pull toes to shins, 1 s squeeze, slow lower.",why:"Shin strength for ankles and knees, from the ATG system. Kept.",swap:"Banded dorsiflexion.",q:"tibialis raise wall"},
+  copenhagen:{n:"Copenhagen Side Plank",tags:["Knee","Core"],cue:"Top leg on a bench (knee for easier, ankle for harder), lift hips into a straight line and hold.",why:"Adductor strength. One Copenhagen exercise cut groin problems by 41% in a 652-player randomized trial (Harøy 2019).",swap:"Side-lying adductor raise.",q:"copenhagen plank progression"},
+  z2:{n:"Zone 2 Cardio",tags:["Cardio"],cue:"Steady pace where you can talk in full sentences but would rather not. Nose breathing is a good check. Roughly 60–70% of max HR, or about 60–75% of FTP on Zwift.",why:"Builds the aerobic base and is most of your weekly cardio. The bike, rower, incline walk and SkiErg are all easy on the knee.",swap:"Zwift at home · rower · incline treadmill walk · SkiErg · ruck walk.",q:"zone 2 training explained"},
+  tgu:{n:"Turkish Get-Up",tags:["Core","Mobility","Shoulder"],cue:"Eyes on the bell the whole way. At home, start with a shoe balanced on your fist and move to the 45 lb bell once that's smooth. Roll, post, bridge, sweep, stand. Reverse it slowly.",why:"Shoulder stability, core and floor-to-standing in one drill. Kept from both, now on the mobility day.",swap:"Half get-up.",q:"turkish get up tutorial"},
+  deepsquat:{n:"Deep Squat Hold",tags:["Mobility"],cue:"Heels down, sit all the way to the bottom, chest tall. Hold a post if needed.",why:"Keeps the bottom position you'll want at 80 for getting off the floor with grandkids. Kept from both.",swap:"Goblet squat hold with a light bell.",q:"deep squat hold"},
+  couch:{n:"Couch Stretch",tags:["Mobility","Knee"],cue:"Back knee against a wall or couch, front foot forward, squeeze the back glute and tuck the pelvis.",why:"Hip flexor and quad length for knees and low back. Long static holds belong here, away from heavy lifting.",swap:"Half-kneeling hip flexor stretch.",q:"couch stretch"},
+  thread:{n:"Thread the Needle",tags:["Mobility"],cue:"On all fours, slide one arm under your body until the shoulder touches the floor, then open up to the ceiling.",why:"Thoracic rotation with the hips locked. Kept from both.",swap:"Open-book stretch.",q:"thread the needle thoracic"},
+  catcow:{n:"Cat-Cow",tags:["Mobility"],cue:"Slow, one vertebra at a time, breathe through each rep.",why:"Spinal warm-up. Kept.",swap:"Segmental rolling.",q:"cat cow"},
+  wallangel:{n:"Wall Angels",tags:["Mobility","Shoulder"],cue:"Back, head, elbows and wrists touching the wall. Slide arms up and down slowly.",why:"Overhead shoulder range lost to desks and pressing. Kept, moved to home.",swap:"Floor angels.",q:"wall angels"},
+  balance:{n:"Single-Leg Balance",tags:["Mobility","Knee"],cue:"One foot, arms crossed, eyes closed, 30 s. Open your eyes to make it easier.",why:"Balance declines early and predicts falls. Being unable to stand 10 s on one leg in midlife was linked to higher mortality (Araújo 2022, BJSM).",swap:"Eyes open on a pillow.",q:"single leg balance eyes closed"},
+  boxjump:{n:"Box Jump",tags:["Power"],cue:"Low-to-mid box. Explode up, land soft and quiet, stand tall, step down. Fully reset each rep.",why:"Power fades faster than strength with age, and jumps keep it. Stepping down spares the knee from landing load.",swap:"Knee flare: med-ball chest pass or 6 s bike sprints.",q:"box jump technique step down"},
+  mbthrow:{n:"Rotational Med Ball Throw",tags:["Power","Core"],cue:"Side-on to a wall, load the back hip, rotate and throw hard. Catch, reset.",why:"Rotational power from the hips, the motion behind swinging, throwing and lifting a kid sideways. Replaces slams and battle ropes.",swap:"Landmine rotational press (from your old programs).",q:"rotational medicine ball throw"},
+  landmine:{n:"Landmine Rotational Press",tags:["Power","Core"],cue:"Drive from the back hip, rotate and press in one motion.",why:"From both old programs. Kept as the swap for med ball throws.",swap:"Single-arm DB press with rotation.",q:"landmine rotational press"},
+  kbswing:{n:"Kettlebell Swing",tags:["Power","Cardio"],cue:"Hike the bell back like a snap, snap the hips through, bell floats to chest height. Arms are ropes.",why:"Hip power and conditioning in one. Kept from both programs.",swap:"Trap-bar jump or DB swing.",q:"kettlebell swing hardstyle"},
+  n4x4:{n:"Norwegian 4×4",tags:["Cardio"],cue:"4 rounds: 4 min hard at 85–95% max HR (by minute 3 you can only get out a few words), then 3 min easy. SkiErg, rower, bike or incline treadmill.",why:"The best-studied interval format for raising VO2max, the fitness marker most tied to lifespan. Use 3 rounds for the first 2 weeks.",swap:"At home on Zwift: build it in the Workout Builder, ERG mode, about 105–115% FTP. Or your old protocol: assault bike 20 s on / 40 s easy × 15 min.",q:"norwegian 4x4 intervals"},
+  deadbug:{n:"Dead Bug",tags:["Core"],cue:"Low back pressed into the floor the whole time, exhale as the arm and leg reach.",why:"Anti-extension core. Kept from both.",swap:"Hollow hold.",q:"dead bug exercise"},
+  sideplankabd:{n:"Side Plank + Hip Abduction",tags:["Core","Knee"],cue:"Side plank on your elbow, raise the top leg 8–10 times without letting the hips drop.",why:"Activates the glute medius more than clamshells and trains the lateral core too. Key for your IT band and knee tracking.",swap:"Side-lying hip abduction.",q:"side plank hip abduction"},
+  farmer:{n:"Farmer Carry",tags:["Grip","Core","Strength"],cue:"Heavy DBs or handles, stand tall, short quick steps, don't let the weights swing.",why:"Grip, traps, core and walking under load: groceries, car seats, kids. Missing from both old programs.",swap:"Trap-bar carry.",q:"farmer carry form"},
+  suitcase:{n:"Suitcase Carry",tags:["Grip","Core"],cue:"One heavy bell, walk without leaning toward it.",why:"Anti-lateral-flexion core and hip stability.",swap:"Offset carry.",q:"suitcase carry"},
+  deadlift:{n:"Deadlift",tags:["Strength"],cue:"Bar over mid-foot, take the slack out, brace, push the floor away. Reset each rep.",why:"Whole posterior chain plus grip. Kept from both.",swap:"Block 2 or a tired back: trap-bar deadlift.",q:"deadlift technique"},
+  ohp:{n:"Standing Overhead Press",tags:["Strength","Shoulder"],cue:"Glutes and abs tight. Press up and slightly back so the bar finishes over mid-foot, head through.",why:"Overhead strength and shoulder range you'll use lifting kids and loading overhead bins. Only Program 2 had it.",swap:"Block 2: standing DB press or landmine press.",q:"overhead press technique"},
+  pullup:{n:"Pull-Up / Chin-Up",tags:["Strength","Grip"],cue:"Full hang, pull your chest toward the bar, chin over. Add weight once 10 strict is easy.",why:"Vertical pull. Kept from both.",swap:"Lat pulldown or band-assisted pull-up.",q:"strict pull up"},
+  atg:{n:"ATG Split Squat",tags:["Strength","Knee","Mobility"],cue:"Front foot flat. Slide the knee as far over the toes as you can while the back leg stays long. Use support at first.",why:"Builds strength in the deep knee-bend range that usually gets injured. Kept from Program 1.",swap:"Bulgarian split squat (alternate each block). Knee flare: Spanish squat.",q:"atg split squat"},
+  nordic:{n:"Nordic Curl",tags:["Strength","Knee"],cue:"Knees on a pad, feet anchored. Lower as slowly as you can, catch yourself, push back up.",why:"Programs that include Nordics roughly halved hamstring injuries (van Dyk 2019, 8,459 athletes). Kept from both.",swap:"Slider leg curl or GHR.",q:"nordic hamstring curl progression"},
+  sled:{n:"Sled Push",tags:["Cardio","Knee"],cue:"Low handles, body at 45°, short powerful steps.",why:"Hard conditioning with no eccentric knee load.",swap:"Bike sprints.",q:"sled push"},
+  stepdown:{n:"Eccentric Step-Down",tags:["Knee"],cue:"4–6 inch step, 3 s lower, knee over the 2nd toe, heel taps and you come back up. Film from the front to check right-knee drift.",why:"VMO control and knee tracking. Kept from Program 1.",swap:"Petersen step-up.",q:"eccentric step down knee"},
+  spanish:{n:"Spanish Squat (Isometric)",tags:["Knee"],cue:"Heavy band behind both knees anchored to a post. Sit back to a wall-sit position, shins vertical, hold.",why:"Isometric quad holds often settle an irritable knee within one session. Your flare-up tool.",swap:"Wall sit.",q:"spanish squat isometric knee"},
+  sitrise:{n:"Floor Sit-to-Stand",tags:["Mobility","Strength"],cue:"Cross your ankles, sit to the floor, stand back up. Goal: no hands, no knees.",why:"The sitting-rising test. Each point lost was linked to higher mortality in 2,002 adults (Araújo, Brazil).",swap:"Use one hand.",q:"sitting rising test"},
+  walk:{n:"Family Walk / Ruck",tags:["Cardio"],cue:"Brisk enough to stay at the talk-test pace. Hills, a stroller, a kid in a carrier or a weighted vest all keep the heart rate up.",why:"Zone 2 that also counts as family time. Counts toward the ~150 min/week target.",swap:"Incline treadmill walk.",q:"rucking for beginners"},
+  pushup:{n:"Push-Up",tags:["Strength"],cue:"Body in one straight line, chest to the floor, elbows about 45°. Elevate your feet or add a backpack to progress.",why:"Pressing anywhere, no equipment.",swap:"Dips.",q:"perfect push up"},
+  gobletsq:{n:"Goblet Squat",tags:["Strength","Mobility"],cue:"Hold the 45 lb bell by the horns at your chest. 3 s down, 2 s pause at the bottom, elbows pushing the knees out.",why:"Squat strength plus depth practice at home.",swap:"Bodyweight tempo squat.",q:"goblet squat"},
+  slrdl:{n:"Single-Leg RDL",tags:["Strength","Knee"],cue:"Hinge on one leg, hips square, reach long. Feel the right glute stabilize.",why:"Balance plus hamstrings. Moved from the gym days to home.",swap:"Kickstand RDL.",q:"single leg rdl"},
+  bearcrawl:{n:"Bear Crawl",tags:["Core","Mobility"],cue:"Knees an inch off the floor, opposite hand and foot move together, back flat.",why:"Crawling coordination and shoulder stability, and kids love it.",swap:"Bear plank hold.",q:"bear crawl"},
+  stairs:{n:"Stair Sprint Snack",tags:["Cardio"],cue:"Climb 2–3 flights fast enough to breathe hard, about 1 min.",why:"Brief vigorous bursts during the day were linked to large mortality reductions in non-exercisers (Stamatakis 2022, Nature Medicine). An easy add on WFH days.",swap:"30 s of fast air squats.",q:"exercise snacks stairs"},
+  zwift:{n:"Zwift Ride",tags:["Cardio"],cue:"ERG mode on a Workout Builder session, so the trainer holds your watts and you can watch something. Zone 2 at about 60–75% FTP. If heart rate drifts above your Zone 2 ceiling, drop 5–10 W.",why:"The most knee-friendly cardio you own, with no commute. It makes 150 min/week of Zone 2 realistic: ride while the kids nap or after bedtime.",swap:"Free ride on a flat route, holding the same heart rate.",q:"zwift erg mode workout builder"},
+  ftp:{n:"Zwift Ramp Test",tags:["Cardio"],cue:"Zwift's built-in ramp test: the power climbs every minute until you can't hold it. It takes about 20 min and sets your FTP so every workout's watts are right.",why:"Your Zone 2 and 4×4 targets are percentages of FTP. Retest every deload week.",swap:"Use heart rate only.",q:"zwift ramp test ftp"},
+  rope:{n:"Jump Rope",tags:["Cardio","Knee","Warm-up"],cue:"Low, quiet bounces on the balls of the feet, wrists turning the rope, knees soft. Start with 30 s on / 30 s off.",why:"Ankle and calf durability, coordination and foot speed. Short doses only: it's high-impact, and your knee flares with volume. Skip it on any flare-up day.",swap:"Pogo hops, or skip it.",q:"jump rope basics beginners"},
+  kbpress:{n:"Single-Arm KB Press",tags:["Strength","Shoulder"],cue:"Bell in the rack position, glutes and abs tight, press straight up. Wrist stacked, biceps by your ear at the top.",why:"Overhead strength one side at a time, which exposes asymmetries. 45 lb is a solid working weight for 5–8 reps.",swap:"Push-up.",q:"single arm kettlebell press"},
+  kbrow:{n:"KB Gorilla Row",tags:["Strength","Grip"],cue:"Bell between your feet, hinge to a flat back, row it to your hip, pause at the top.",why:"Pull at home to balance the push-ups and presses.",swap:"Bent-over single-arm row with one hand on a chair.",q:"kettlebell row single arm"}
+};
+
+/* ---------- Sessions ---------- */
+const S = [
+ {id:"wed",dow:3,day:"Wednesday",plate:"blue",name:"Squat & Press",focus:"Heavy squat, bench, lateral strength and knee armor, then a short Zone 2 flush.",blocks:[
+  {t:"Warm-up",m:7,note:"Dynamic only. No long static holds before lifting.",items:[["backwalk","2 min"],["wgs","3 / side"],["hip9090","5 / side"],["gobletpry","5 reps"],["pullapart","15 reps"]]},
+  {t:"A · Squat",m:15,note:"Ramp up in 3–4 sets, then work sets. Hang during the rest.",items:[["squat","4 × 4–6 · RIR 2","rest 2–3 min"],["deadhang","4 × 30–45 s","in rest"]]},
+  {t:"B · Press + Pull",m:13,note:"Superset: alternate B1 and B2.",items:[["bench","3 × 5–8 · RIR 1–2","rest 90 s"],["csrow","3 × 8–12","rest 60 s"]]},
+  {t:"C · Lateral + Shoulders",m:8,items:[["cossack","2 × 6–8 / side"],["facepull","2 × 15"]]},
+  {t:"D · Knee & Groin Armor",m:5,items:[["tibraise","2 × 15–20"],["copenhagen","2 × 15–30 s / side"]]},
+  {t:"Finish · Zone 2",m:10,items:[["z2","10 min bike or rower","easy"]]}
+ ]},
+ {id:"fri",dow:5,day:"Friday",plate:"green",name:"Engine & Mobility",focus:"At home: a long Zwift Zone 2 ride plus a mobility circuit with the kettlebell. No commute, and you can split it around work. Recovery before the weekend.",blocks:[
+  {t:"Ramp",m:5,items:[["zwift","5 min, building to Zone 2","ERG"]]},
+  {t:"Zone 2 Ride",m:40,note:"ERG mode at about 65% FTP. Split 20 at lunch + 20 after work if the day demands it. Grow toward 60 min when life allows.",items:[["zwift","40 min @ 60–75% FTP","HR capped"]]},
+  {t:"Mobility & Stability",m:15,note:"2 rounds, unhurried, in the living room. Static holds belong here, after cardio.",items:[["tgu","2 / side, 45 lb bell or shoe"],["hip9090","5 / side with lift-offs"],["deepsquat","60 s, holding the bell"],["couch","45 s / side"],["thread","6 / side"],["balance","30 s / side, eyes closed"],["suitcase","45 lb, 40 m / side","grip"]]}
+ ]},
+ {id:"sat",dow:6,day:"Saturday",plate:"yellow",name:"Power & VO2max",focus:"Jumps and throws while you're fresh, then the hardest cardio of the week.",blocks:[
+  {t:"Warm-up",m:6,items:[["z2","3 min bike, building"],["wgs","3 / side"],["pogo","2 × 15","skip if knee flares"]]},
+  {t:"A · Power",m:8,note:"Quality over fatigue. Full rest, every rep fast.",items:[["boxjump","4 × 3","rest 60 s"],["mbthrow","4 × 4 / side"]]},
+  {t:"B · Swings",m:5,items:[["kbswing","5 × 10 EMOM","heavy"]]},
+  {t:"C · VO2max",m:28,note:"Use the SkiErg or rower when the knee is grumpy. Bike also works.",items:[["n4x4","4 × (4 min hard / 3 min easy)","85–95% HRmax"]]},
+  {t:"D · Core",m:5,items:[["deadbug","2 × 8 / side"],["sideplankabd","2 × 8 / side"]]}
+ ]},
+ {id:"sun",dow:0,day:"Sunday",plate:"red",name:"Hinge & Pull",focus:"Heavy deadlift, overhead press, pull-ups, single-leg strength and heavy carries.",blocks:[
+  {t:"Warm-up",m:7,items:[["backwalk","3 × 20 m sled drag"],["catcow","6 slow"],["wgs","3 / side"],["pullapart","15 reps"]]},
+  {t:"A · Deadlift",m:14,note:"Ramp up, then work sets. Thread the needle in the rest.",items:[["deadlift","4 × 3–5 · RIR 2","rest 2–3 min"],["thread","4 × 5 / side","in rest"]]},
+  {t:"B · Press + Pull",m:13,note:"Superset.",items:[["ohp","3 × 5–8 · RIR 1–2","rest 90 s"],["pullup","3 × 5–10","weighted at 10+"]]},
+  {t:"C · Single-Leg + Hamstrings",m:10,items:[["atg","3 × 8 / side"],["nordic","3 × 3–6"]]},
+  {t:"D · Carries",m:6,items:[["farmer","3 × 40 m","heavy"],["suitcase","1 × 40 m / side"]]},
+  {t:"Finish",m:5,note:"Optional if the clock allows.",items:[["sled","4 × 20 m","or easy bike"]]}
+ ]}
+];
+
+/* ---------- Home routines ---------- */
+const H = [
+ {name:"Daily 10",when:"Every day · 10 min · morning or after bedtime",plate:"green",note:"Your static stretching lives here. Fine for rest days or the evening after training.",items:[["catcow","8 slow"],["wgs","3 / side"],["hip9090","6 / side"],["couch","60 s / side"],["deepsquat","1–2 min total"],["thread","6 / side"],["wallangel","10 slow"]]},
+ {name:"Knee & Hip Armor",when:"Mon + Thu · 12 min · hallway or stairs",plate:"blue",note:"Strengthening the hips and quads beats foam rolling the IT band. Keep pain at 3/10 or less.",items:[["backwalk","2 min, or backward up stairs"],["tibraise","2 × 20"],["stepdown","3 × 8 / side"],["sideplankabd","2 × 8 / side"],["copenhagen","2 × 20 s / side, on the couch"],["slrdl","2 × 8 / side"],["spanish","3 × 45 s, only if flaring"]]},
+ {name:"Zwift Zone 2",when:"Mon + Thu · 30–45 min · nap time or after bedtime",plate:"yellow",note:"Two of these plus Friday's ride get you to about 150 min of Zone 2 a week. A family walk counts too when the weather's nice.",items:[["zwift","30–45 min @ 60–75% FTP","ERG"],["walk","or a 30–45 min family walk","talk-test pace"]]},
+ {name:"Kettlebell 20",when:"Tue or any day · 20 min · one 45 lb bell",plate:"red",note:"3 rounds, about 60 s rest between rounds. Rope first if the knee is calm. Kids welcome as spectators.",items:[["rope","3 × 30 s on / 30 s off","warm-up, knee-calm days"],["kbswing","15"],["gobletsq","10, 3 s down"],["kbpress","6 / side"],["kbrow","10 / side"],["slrdl","8 / side, holding the bell"],["suitcase","40 m / side"]]},
+ {name:"Dad Circuit",when:"Any day · 15 min · no gear",plate:"red",note:"3 rounds, for travel or when the bell's buried under toys.",items:[["pushup","10–20"],["gobletsq","10 (bodyweight or kid)"],["slrdl","8 / side"],["sitrise","5, no hands"],["bearcrawl","20 steps"]]},
+ {name:"Zwift VO2max Backup",when:"When Saturday's gym trip falls through · 35 min",plate:"yellow",note:"The same 4×4 as Saturday, on the trainer. Build it once in the Workout Builder and save it.",items:[["zwift","8 min warm-up incl. 2 × 30 s surges"],["n4x4","4 × (4 min @ 105–115% FTP / 3 min @ 50%)","85–95% HRmax"]]},
+ {name:"WFH Exercise Snacks",when:"Wed + Fri · 3–5 × 1–2 min",plate:"blue",note:"Between calls. Each one counts.",items:[["stairs","1 min hard"],["kbswing","20 swings"],["rope","60 s easy, knee-calm days"],["pushup","10"]]}
+];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+const check = '<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>';
+const chev = '<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>';
+const todayDow = new Date().getDay();
+
+function howto(id){
+  const x = E[id];
+  return `<div class="howto" hidden>
+    <div><div class="lab">How</div><p>${esc(x.cue)}</p></div>
+    <div><div class="lab">Why it's here</div><p>${esc(x.why)}</p></div>
+    <div><div class="lab">Swap</div><p>${esc(x.swap)}</p></div>
+    <a class="watch" href="${yt(x.q)}" target="_blank" rel="noopener">Watch demos ↗</a>
+  </div>`;
+}
+function exRow(it, key, i, plate){
+  const [id, rx, tag] = it; const x = E[id];
+  const done = key ? !!(store.get("done-"+key, {})[i]) : false;
+  return `<div class="ex${done?" done":""}" data-i="${i}">
+    <div class="ex-row">
+      ${key ? `<button class="chk" aria-pressed="${done}" aria-label="Mark ${esc(x.n)} done" style="--done:var(--${plate})"><i>${check}</i></button>` : `<span></span>`}
+      <button class="ex-name" aria-expanded="false"><b>${esc(x.n)}</b><span class="rx">${esc(rx)}</span></button>
+      <span class="ex-tag">${tag?esc(tag):""} ${chev}</span>
+    </div>${howto(id)}</div>`;
+}
+function bindRows(root, key, plate){
+  root.querySelectorAll(".ex").forEach(ex => {
+    const nm = ex.querySelector(".ex-name"), hw = ex.querySelector(".howto");
+    const toggle = () => { const o = hw.hidden; hw.hidden = !o; ex.classList.toggle("open", o); nm.setAttribute("aria-expanded", o); };
+    nm.addEventListener("click", toggle);
+    ex.querySelector(".ex-tag").addEventListener("click", toggle);
+    const c = ex.querySelector(".chk");
+    if (c && key) c.addEventListener("click", () => {
+      const st = store.get("done-"+key, {}); const i = ex.dataset.i; st[i] = !st[i]; store.set("done-"+key, st);
+      c.setAttribute("aria-pressed", !!st[i]); ex.classList.toggle("done", !!st[i]);
+    });
+  });
+}
+
+/* ---------- views ---------- */
+const V = {};
+V.week = () => {
+  const plan = {1:["Rest","Zwift Z2 + knee armor"],2:["Rest","Daily 10, KB 20 optional"],3:["wed"],4:["Rest","Zwift Z2 + knee armor"],5:["fri"],6:["sat"],0:["sun"]};
+  const order = [1,2,3,4,5,6,0], ab = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  const strip = order.map(d => {
+    const p = plan[d]; const s = S.find(x => x.id === p[0]);
+    return s ? `<div class="dayc gym${d===todayDow?" today":""}" data-go="${s.id}" role="button" tabindex="0" aria-label="${s.day}: ${s.name}"><span class="d">${ab[d]}</span><span class="disc bg-${s.plate}">${S.indexOf(s)+1}</span><span class="l">${s.name}</span></div>`
+             : `<div class="dayc${d===todayDow?" today":""}"><span class="d">${ab[d]}</span><span class="disc off">–</span><span class="l">${p[1]}</span></div>`;
+  }).join("");
+  return `
+  <section>
+    <span class="eyebrow">Your week</span>
+    <h1>Strong, mobile, big engine. In under an hour.</h1>
+    <p class="lede">Your two programs merged and rebuilt around three longevity pillars: strength, cardio (Zone 2 plus VO2max) and mobility, with knee armor running through all of it. Tap a day to train.</p>
+  </section>
+  <div class="strip">${strip}</div>
+  <section class="panel">
+    <h3>Weekly targets</h3>
+    <div class="kv">
+      <span class="k c-red">3 + 1</span><span class="v">Three gym sessions (Wed, Sat, Sun) and one home session on Zwift (Fri), each about an hour.</span>
+      <span class="k c-green">150 min</span><span class="v">Zone 2. About 20 at the gym, 40 on Friday's ride, and two 30–45 min Zwift rides on Mon and Thu.</span>
+      <span class="k c-yellow">16 min</span><span class="v">True VO2max work (the 4×4 on Saturday).</span>
+      <span class="k c-blue">2×</span><span class="v">Every major pattern each week: squat, hinge, push, pull, carry, lateral, rotation.</span>
+    </div>
+  </section>
+  <section class="panel">
+    <h3>How to progress</h3>
+    <ul class="plain">
+      <li><b>Effort:</b> end main-lift sets with 1–3 reps in reserve (RIR). Never grind.</li>
+      <li><b>Double progression:</b> once every set hits the top of the rep range, add 5 lb (upper body) or 10 lb (lower body) next time.</li>
+      <li><b>6-week blocks:</b> build for weeks 1–5. Week 6 is a deload (half the sets, about 90% of the weight, easy cardio) and your test week.</li>
+      <li><b>Rotate variations each block:</b> Block 1 back squat, bench, conventional deadlift, barbell OHP, ATG split squat. Block 2 front or safety-bar squat, incline DB press, trap-bar deadlift, DB OHP, Bulgarian split squat.</li>
+      <li><b>Cardio:</b> the 4×4 gets faster at the same heart rate. Grow Zone 2 by 5 min a week when the schedule allows.</li>
+    </ul>
+  </section>
+  <section class="panel">
+    <h3>Heart-rate guide</h3>
+    <div class="kv">
+      <span class="k c-green">Zone 2</span><span class="v">Full sentences, nose breathing. About 60–70% of max HR. Rough ceiling: 180 minus your age.</span>
+      <span class="k c-yellow">4×4</span><span class="v">85–95% of max HR. By minute 3 you can only get out a few words.</span>
+    </div>
+  </section>
+  <section class="panel">
+    <h3>Zwift setup</h3>
+    <ul class="plain">
+      <li><b>Find your FTP first:</b> run Zwift's ramp test once now, then again each deload week. Every watt target in this plan is a percentage of it.</li>
+      <li><b>Zone 2 = about 60–75% FTP</b> in ERG mode. Heart rate is the tiebreaker: if it creeps past your Zone 2 ceiling late in the ride, drop 5–10 W. Wear a chest strap if you have one.</li>
+      <li><b>Save two workouts</b> in the Workout Builder: “Z2 45” (5 min ramp, 40 min at 65%) and “4×4” (8 min warm-up, then 4 × 4 min at 105–115% with 3 min at 50% between).</li>
+      <li><b>Progress:</b> raise the 4×4 watts when your heart rate in the last minute of rep 4 stays under 92% of max. Raise Zone 2 watts once your FTP goes up.</li>
+    </ul>
+  </section>
+  <section class="panel">
+    <h3>Short week? Priority order</h3>
+    <ul class="plain">
+      <li><b>Can't get to the gym Saturday:</b> do the Zwift VO2max Backup plus Kettlebell 20 at home. You lose almost nothing.</li>
+      <li><b>Only 2 gym trips:</b> Wed and Sun. Friday stays on Zwift, and Saturday becomes the Zwift 4×4 plus Kettlebell 20.</li>
+      <li><b>Short on Friday:</b> split the ride (20 min at lunch + 20 after work), or move it to Thursday night. Don't stack it onto Saturday.</li>
+      <li><b>Bad sleep (new-baby nights):</b> do the session, but drop one set from everything and keep the RIR at 3.</li>
+    </ul>
+  </section>
+  <section class="panel" id="knee">
+    <h3>Knee flare-up protocol</h3>
+    <p style="color:var(--muted);font-size:14px">Rule: pain during training stays at 3/10 or below and has settled by the next morning. Over that, swap:</p>
+    <ul class="plain">
+      <li>Back squat → box squat to parallel, or goblet squat to a box</li>
+      <li>ATG split squat → Spanish squat 5 × 45 s, or less depth</li>
+      <li>Cossack → lateral lunge to a high box</li>
+      <li>Box jumps, pogos and jump rope → med-ball chest pass or 6 s seated sprints on Zwift</li>
+      <li>4×4 on the treadmill → SkiErg, rower or Zwift (seated, high cadence)</li>
+      <li>Keep doing tibialis raises, step-downs (to tolerance), side planks and Copenhagens</li>
+    </ul>
+    <div class="callout">See a physio if you get swelling, pain at rest, or pain that keeps climbing week to week.</div>
+  </section>
+  <section class="panel">
+    <h3>Test every deload week</h3>
+    <div class="tests">
+      <div class="t">Sitting-rising test<span>Floor to standing, no hands or knees</span></div><div class="g">10 / 10</div>
+      <div class="t">Dead hang<span>Grip and shoulder health</span></div><div class="g">90 s → 2 min</div>
+      <div class="t">Farmer carry<span>Total load, both hands</span></div><div class="g">BW × 60 s</div>
+      <div class="t">Single-leg balance<span>Eyes closed, per side</span></div><div class="g">30 s</div>
+      <div class="t">Deep squat hold<span>Heels down, relaxed</span></div><div class="g">2 min</div>
+      <div class="t">2k row<span>Track it; it should keep dropping</span></div><div class="g">PR</div>
+      <div class="t">Resting heart rate<span>Morning, watch or manual</span></div><div class="g">trend ↓</div>
+      <div class="t">Strict pull-ups</div><div class="g">10+</div>
+      <div class="t">Squat · Deadlift 5RM<span>Strength target, × bodyweight</span></div><div class="g">1.25 · 1.75</div>
+    </div>
+    <p style="color:var(--muted);font-size:13px">The first five are research-linked longevity markers. The strength numbers are coaching targets for "lean and strong," not research thresholds.</p>
+  </section>
+  <section class="panel">
+    <h3>Outside the gym</h3>
+    <ul class="plain">
+      <li><b>Protein:</b> about 1.6 g per kg of bodyweight a day, where the benefit for muscle gain levels off (Morton 2018 meta-analysis). It also makes staying lean easier.</li>
+      <li><b>Steps:</b> 8–10k a day. That's where the mortality benefit flattens for adults under 60 (Paluch 2022, Lancet Public Health).</li>
+      <li><b>Sleep:</b> it's the limiting factor right now. On bad nights, use the short-week rules above instead of skipping.</li>
+    </ul>
+  </section>`;
+};
+V.train = () => {
+  let cur = store.get("day", null);
+  if (!S.find(s => s.id === cur)) { const next = [3,5,6,0].map(d => ({d, k:(d - todayDow + 7) % 7})).sort((a,b) => a.k - b.k)[0].d; cur = S.find(s => s.dow === next).id; }
+  const s = S.find(x => x.id === cur);
+  const total = s.blocks.reduce((a,b) => a + b.m, 0);
+  const shades = ["", "opacity:.82", "opacity:.64", "opacity:.5", "opacity:.38", "opacity:.28"];
+  const pick = S.map((x,i) => `<button class="pp" aria-pressed="${x.id===cur}" data-day="${x.id}"><span class="disc bg-${x.plate}"></span><span class="n">${x.day.slice(0,3).toUpperCase()}</span><span class="t">${x.name}</span></button>`).join("");
+  const bar = s.blocks.map((b,i) => `<span class="bg-${s.plate}" style="flex:${b.m};${shades[i]||""}" title="${esc(b.t)} ${b.m} min"></span>`).join("");
+  let idx = 0;
+  const blocks = s.blocks.map(b => `<div class="block">
+      <div class="block-h"><div><h3>${esc(b.t)}</h3>${b.note?`<div class="note">${esc(b.note)}</div>`:""}</div><span class="mono">${b.m} min</span></div>
+      ${b.items.map(it => exRow(it, s.id, idx++, s.plate)).join("")}
+    </div>`).join("");
+  return `
+  <div class="plates-pick" role="group" aria-label="Training day">${pick}</div>
+  <section class="sess-head">
+    <span class="eyebrow c-${s.plate}">Day ${S.indexOf(s)+1} · ${s.day}</span>
+    <h1>${esc(s.name)}</h1>
+    <p class="lede">${esc(s.focus)}</p>
+    <div class="timebar" aria-label="Session time budget">${bar}</div>
+    <div class="legend"><span class="mono">${total} min</span>${s.blocks.map(b => `<span>${esc(b.t.split(" · ").pop())} ${b.m}</span>`).join("")}</div>
+  </section>
+  ${blocks}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button class="btn" id="reset">Clear checkmarks</button>
+    <span style="color:var(--muted);font-size:13px">Tap any exercise for how-to, why and swaps.</span>
+  </div>`;
+};
+V.home = () => `
+  <section>
+    <span class="eyebrow">Non-gym days</span>
+    <h1>Short routines for home</h1>
+    <p class="lede">Built around your Zwift bike, the 45 lb kettlebell and the jump rope. This is where the rest of your Zone 2, your static mobility and your knee work happen.</p>
+  </section>
+  ${H.map(r => `<div class="block">
+    <div class="block-h"><div><h3 class="c-${r.plate}">${esc(r.name)}</h3><div class="note">${esc(r.when)}</div></div></div>
+    <div style="padding:10px 14px 4px;font-size:14px;color:var(--muted)">${esc(r.note)}</div>
+    ${r.items.map((it,i) => exRow(it, null, i, r.plate)).join("")}
+  </div>`).join("")}`;
+let libQ = "", libTag = "All";
+V.moves = () => {
+  const tags = ["All","Strength","Power","Cardio","Mobility","Knee","Core","Grip","Shoulder","Warm-up"];
+  return `
+  <section>
+    <span class="eyebrow">${Object.keys(E).length} movements</span>
+    <h1>Exercise library</h1>
+  </section>
+  <input class="search" id="q" type="search" placeholder="Search exercises" value="${esc(libQ)}" aria-label="Search exercises">
+  <div class="chips">${tags.map(t => `<button class="chip" data-tag="${t}" aria-pressed="${t===libTag}">${t}</button>`).join("")}</div>
+  <div class="lib" id="lib"></div>`;
+};
+function renderLib(){
+  const q = libQ.toLowerCase();
+  const list = Object.values(E).filter(x => (libTag === "All" || x.tags.includes(libTag)) && (!q || (x.n + " " + x.cue + " " + x.why).toLowerCase().includes(q)));
+  $("#lib").innerHTML = list.length ? list.map(x => `<div class="card">
+    <div class="top"><h3>${esc(x.n)}</h3><div class="tags">${x.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div></div>
+    <p>${esc(x.cue)}</p>
+    <div><div class="lab">Why it's here</div><p style="color:var(--muted);font-size:14px">${esc(x.why)}</p></div>
+    <div><div class="lab">Swap</div><p style="color:var(--muted);font-size:14px">${esc(x.swap)}</p></div>
+    <a class="watch" style="font-size:13px;font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;align-self:flex-start" href="${yt(x.q)}" target="_blank" rel="noopener">Watch demos ↗</a>
+  </div>`).join("") : `<p style="color:var(--muted)">No exercise matches “${esc(libQ)}”. Try a body part or a word like “knee”.</p>`;
+}
+V.why = () => {
+  const R = [
+   ["keep","Back squat, deadlift, bench press, pull-ups","The backbone of both programs. Heavy compound lifts at low volume are the most time-efficient way to stay strong."],
+   ["keep","Nordic curl, ATG split squat, tibialis raise, step-downs, backward walking","Your knee and hamstring armor. Nordics have the best injury-prevention evidence of any single exercise."],
+   ["keep","KB swing, box jump, Turkish get-up, dead bug, face pull","Power, shoulder health and core. Get-ups moved to Friday's mobility circuit."],
+   ["keep","World's greatest stretch, 90/90, thread the needle, cat-cow, deep squat, couch stretch, wall angels","Same drills, now split between a short dynamic warm-up and the home and Friday sessions."],
+   ["change","10–15 min static warm-up → 6–7 min dynamic ramp","Long static holds (60 s or more) right before lifting reduce strength. They moved to Friday, home days and evenings."],
+   ["change","3-day A/B/C rotation → fixed 4-day plate week","Squat on Wednesday and deadlift on Sunday sit 3–4 days apart. Power and VO2max come on Saturday, after an easy Friday."],
+   ["change","Barbell row + inverted row → chest-supported DB row","Same pull with no low-back fatigue before deadlift day."],
+   ["change","Clamshells and plank → side plank with hip abduction","More glute-medius work and lateral core in one exercise."],
+   ["change","Assault bike 20/40 → Norwegian 4×4","The best-studied VO2max protocol. 20/40 stays as the swap."],
+   ["change","Optional 1–2 cardio days → scheduled Zone 2 day, finishers and walks","Cardio fitness is the strongest single fitness predictor of lifespan. It was the least-structured part of both docs."],
+   ["change","Hanging knee raise → dead hangs during squat rest","Grip and shoulder health at no time cost."],
+   ["change","Bulgarian split squat ↔ ATG split squat","They now alternate by block instead of both running at once."],
+   ["cut","IT band foam rolling, standing IT band stretch","Rolling doesn't change IT band stiffness or hip range in trials. Hip strengthening is what helps, so that time went to side planks and Copenhagens."],
+   ["cut","Glute bridge / hip thrust, DB incline press, dips, barbell row","Redundant with the main lifts and didn't fit in 60 minutes. Incline DB press comes back as the Block 2 bench variation."],
+   ["cut","Burpees, battle ropes, med-ball slams","Generic conditioning. Replaced by targeted Zone 2, the 4×4 and rotational throws."],
+   ["change","15-min jump-rope intervals → 3 × 30 s rope warm-ups at home","Keeps the ankle and coordination benefit at a dose the knee tolerates. Skip it on flare-up days. Build toward longer rope work after 8 pain-free weeks."],
+   ["cut","Bounding / single-leg hops","Highest-impact drill in either doc, and your knee flares with volume. Box jumps with a step-down give the power without the landings."],
+   ["add","Zwift Zone 2 and a Zwift 4×4 backup","Turns your WFH Friday and two rest-day evenings into knee-friendly cardio with no commute. That's how 150 min/week becomes realistic."],
+   ["add","Kettlebell 20 home circuit (45 lb)","Swings, goblet squats, presses, rows and carries with one bell. A home strength day for short weeks."],
+   ["cut","Neck rolls, inchworms, ankle circles, thoracic foam roll","Harmless, but the warm-up needed the time. WGS and deep squats cover the same ground."],
+   ["add","Cossack squat, Copenhagen plank","Both old programs were almost entirely forward-and-back. These add strength and range in the side-to-side plane."],
+   ["add","Farmer and suitcase carries, dead hangs","Grip and loaded walking: the most practical longevity strength there is."],
+   ["add","Rotational med-ball throws","Power fades faster than strength with age. Throws train rotational power safely."],
+   ["add","Zone 2 sessions, Norwegian 4×4, sled work","A real cardio plan with low knee stress."],
+   ["add","Single-leg balance, sitting-rising practice, exercise snacks","Cheap, research-linked markers of how well you'll move at 80."]
+  ];
+  const label = {keep:"Kept",change:"Changed",cut:"Cut",add:"Added"};
+  let filt = store.get("whyf","all");
+  return `
+  <section>
+    <span class="eyebrow">The review</span>
+    <h1>What changed and why</h1>
+    <p class="lede">Your two programs agreed on almost everything, and most of it was good. The gaps were cardio, time, frontal-plane strength and how the stretching was placed.</p>
+  </section>
+  <section class="panel">
+    <h3>The nine big moves</h3>
+    <ol class="change-list">
+      <li><div><b>Cardio went from optional to scheduled.</b><span>In 122,000 treadmill-tested adults, the least fit had about 5× the death risk of the fittest (Mandsager 2018). That's a bigger gap than smoking.</span></div></li>
+      <li><div><b>Zone 2 base plus one VO2max day.</b><span>The pattern used by Peter Attia, by endurance coaches and in the Norwegian 4×4 research: lots of easy work and a little very hard work.</span></div></li>
+      <li><div><b>Every session fits in 60 minutes.</b><span>Supersets and 2–4 hard sets per lift. Strength training's mortality benefit peaks around 30–60 min/week (Momma 2022), and trained lifters keep gaining strength on low volume.</span></div></li>
+      <li><div><b>Lifting and cardio share sessions safely.</b><span>Concurrent-training meta-analyses find no meaningful loss of strength or size. Power is the one thing that suffers, so jumps come first on Saturday, before the intervals.</span></div></li>
+      <li><div><b>Static stretching moved out of the warm-up.</b><span>Holds of 60 s or more right before lifting measurably cut strength. Dynamic ramps don't.</span></div></li>
+      <li><div><b>Loaded full range does double duty as mobility.</b><span>Resistance training through full range improves flexibility about as much as stretching does (Alizadeh 2023). Cossacks, ATG split squats and deep squats are mobility work.</span></div></li>
+      <li><div><b>Side-to-side and rotation added.</b><span>Cossacks, Copenhagens and rotational throws fill the frontal and transverse planes, the ones you need for catching falls and keeping up with kids.</span></div></li>
+      <li><div><b>Knee care is strength-first.</b><span>Hip plus knee strengthening beats knee work alone for patellofemoral pain (Nascimento 2018). IT band rolling was dropped. You also get a written flare-up protocol.</span></div></li>
+      <li><div><b>Power is protected.</b><span>Muscle power declines sooner and faster than strength, and it predicts falls and function better. Jumps, throws and swings stay in every week.</span></div></li>
+    </ol>
+  </section>
+  <section class="panel">
+    <h3>Exercise by exercise</h3>
+    <div class="seg">${["all","keep","change","cut","add"].map(k => `<button class="chip" data-wf="${k}" aria-pressed="${k===filt}">${k==="all"?"All":label[k]}</button>`).join("")}</div>
+    <div class="verdicts">${R.filter(r => filt==="all" || r[0]===filt).map(r => `<div class="vrow"><b><span class="stamp st-${r[0]}">${label[r[0]]}</span>${esc(r[1])}</b><span>${esc(r[2])}</span></div>`).join("")}</div>
+  </section>
+  <section class="panel">
+    <h3>Programs I borrowed from</h3>
+    <ul class="plain">
+      <li><b>Peter Attia's Centenarian Decathlon:</b> stability, strength, Zone 2 and VO2max as four separate pillars, planned backward from what you want to do at 80.</li>
+      <li><b>Tactical Barbell:</b> concurrent strength and conditioning with a small set of lifts, run on a fixed block structure.</li>
+      <li><b>Knees Over Toes (Ben Patrick):</b> backward walking, tibialis raises, ATG split squat. Your knee base stays intact.</li>
+      <li><b>Dan John:</b> loaded carries and "easy strength." Few lifts, done often, never to failure.</li>
+      <li><b>Norwegian 4×4 (Helgerud, Wisløff):</b> the interval format.</li>
+    </ul>
+  </section>
+  <section class="panel">
+    <h3>Sources</h3>
+    <div class="src">
+      <div><a href="https://www.tctmd.com/news/big-fitness-equals-big-survival-benefit-new-study-shows" target="_blank" rel="noopener">Mandsager et al. 2018, JAMA Netw Open: cardiorespiratory fitness and mortality</a><div class="who">122k adults; low vs. elite fitness HR ≈ 5.0 (TCTMD summary)</div></div>
+      <div><a href="https://bjsm.bmj.com/content/56/13/755" target="_blank" rel="noopener">Momma et al. 2022, BJSM: muscle-strengthening and mortality</a><div class="who">Peak risk reduction at ~30–60 min/week</div></div>
+      <div><a href="https://hsph.harvard.edu/news/exercising-more-than-recommended-could-lengthen-life-study-suggests" target="_blank" rel="noopener">Lee et al. 2022, Circulation: activity dose and mortality</a><div class="who">150–300 vigorous or 300–600 moderate min/week ≈ near-max benefit</div></div>
+      <div><a href="https://inscyd.com/article/hiit-vs-norwegian-4x4/" target="_blank" rel="noopener">Norwegian 4×4 vs. other HIIT (INSCYD)</a><div class="who">Practitioner review of the Helgerud 2007 protocol</div></div>
+      <div><a href="https://peterattiamd.com/ama39" target="_blank" rel="noopener">Attia, AMA #39: Centenarian Decathlon, Zone 2, VO2max</a><div class="who">Weekly structure of the four pillars</div></div>
+      <div><a href="https://sportrxiv.org/index.php/server/preprint/view/37" target="_blank" rel="noopener">Schumann et al. 2022: concurrent training meta-analysis</a><div class="who">No meaningful hypertrophy or max-strength interference; power is more sensitive</div></div>
+      <div><a href="https://www.strongerbyscience.com/one-set-muscle/" target="_blank" rel="noopener">Stronger by Science: how little volume still works</a><div class="who">Low-volume strength evidence (Korakakis, Pelland)</div></div>
+      <div><a href="https://doaj.org/article/c9ed6653d18647408f444d101de5e38f" target="_blank" rel="noopener">Warneke & Lohmann 2024, JSHS: stretch-induced force deficit</a><div class="who">Holds of 60 s or more before lifting cost strength</div></div>
+      <div><a href="https://pubmed.ncbi.nlm.nih.gov/36525533/" target="_blank" rel="noopener">2022 meta-analysis: stretching and strength training</a><div class="who">Pre-lift stretching shows a small negative effect; do it separately</div></div>
+      <div><a href="https://www.omicsdi.org/dataset/biostudies-literature/S-EPMC9935664" target="_blank" rel="noopener">Alizadeh et al. 2023: resistance training vs. stretching for range of motion</a><div class="who">No significant difference between the two</div></div>
+      <div><a href="https://bjsm.bmj.com/content/53/21/1362" target="_blank" rel="noopener">van Dyk et al. 2019, BJSM: Nordic hamstring exercise</a><div class="who">Up to 51% fewer hamstring injuries (a later reappraisal is more cautious)</div></div>
+      <div><a href="https://bjsm.bmj.com/content/53/3/150.abstract" target="_blank" rel="noopener">Harøy et al. 2019, BJSM: Copenhagen adduction RCT</a><div class="who">41% lower risk of groin problems</div></div>
+      <div><a href="https://wikiMSK.org/w/img_auth.php/3/34/Hip_and_Knee_Strengthening_in_Patellofemoral_Syndrome_Metaanalysis_-_Nascimiento_2018.pdf" target="_blank" rel="noopener">Nascimento et al. 2018, JOSPT: hip + knee strengthening for knee pain</a><div class="who">Hip plus knee beats knee alone for pain and function</div></div>
+      <div><a href="https://learnmuscles.com/blog/2025/04/29/foam-rolling-the-itb-did-not-increase-hip-rom/" target="_blank" rel="noopener">Foam rolling the IT band did not increase hip range of motion</a><div class="who">Plus a 2021 RCT showing no change in IT band stiffness</div></div>
+      <div><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9631804" target="_blank" rel="noopener">Power training in older adults (meta-analysis)</a><div class="who">Power fades faster than strength and predicts function better</div></div>
+      <div><a href="https://www.ideafit.com/sit-to-stand-predicts-mortality-in-older-adults" target="_blank" rel="noopener">Sitting-rising test and mortality (Araújo)</a><div class="who">2,002 adults aged 51–80</div></div>
+      <div><span>Also cited from the literature, without links: Araújo 2022 BJSM (10 s one-leg stand), Stamatakis 2022 Nature Medicine (vigorous activity snacks), Morton 2018 BJSM (protein), Paluch 2022 Lancet Public Health (steps).</span></div>
+    </div>
+  </section>`;
+};
+
+/* ---------- keep the screen on while training ---------- */
+let wake = null;
+async function keepAwake(on){
+  try{
+    if (on && !wake && navigator.wakeLock && document.visibilityState === "visible") { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { wake = null; }); }
+    if (!on && wake) { await wake.release(); wake = null; }
+  }catch(e){ wake = null; }
+}
+document.addEventListener("visibilitychange", () => keepAwake(store.get("tab","week") === "train"));
+
+/* ---------- router ---------- */
+const TABS = ["week","train","home","moves","why"];
+function show(tab, push){
+  if (!TABS.includes(tab)) tab = "week";
+  keepAwake(tab === "train");
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  const v = $("#view"); v.innerHTML = V[tab]();
+  store.set("tab", tab);
+  if (push) { try{ history.replaceState(null, "", "#" + tab); }catch(e){} }
+  window.scrollTo(0, 0);
+  if (tab === "week") v.querySelectorAll("[data-go]").forEach(el => {
+    const go = () => { store.set("day", el.dataset.go); show("train", true); };
+    el.addEventListener("click", go); el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+  if (tab === "train") {
+    const s = store.get("day", null);
+    const cur = v.querySelector('.pp[aria-pressed="true"]').dataset.day;
+    v.querySelectorAll(".pp").forEach(b => b.addEventListener("click", () => { store.set("day", b.dataset.day); show("train"); }));
+    const sess = S.find(x => x.id === cur);
+    bindRows(v, cur, sess.plate);
+    $("#reset").addEventListener("click", () => { store.set("done-"+cur, {}); show("train"); });
+  }
+  if (tab === "home") bindRows(v, null, null);
+  if (tab === "moves") {
+    renderLib();
+    $("#q").addEventListener("input", e => { libQ = e.target.value; renderLib(); });
+    v.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => { libTag = c.dataset.tag; v.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c)); renderLib(); }));
+  }
+  if (tab === "why") v.querySelectorAll("[data-wf]").forEach(c => c.addEventListener("click", () => { store.set("whyf", c.dataset.wf); const y = window.scrollY; show("why"); window.scrollTo(0, y); }));
+}
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.tab, true)));
+const h = (location.hash || "").slice(1);
+show(TABS.includes(h) ? h : store.get("tab", "week"));
+window.addEventListener("hashchange", () => { const t = location.hash.slice(1); if (TABS.includes(t)) show(t); });
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
